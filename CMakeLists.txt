@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 
-project({{ProjectName}}
-        VERSION {{Version}}
-        DESCRIPTION "{{Description}}"
+project(SudokuZoo
+        VERSION 0.1
+        DESCRIPTION "Zoo of varies sudoku implementations"
         LANGUAGES C CXX
 )
 

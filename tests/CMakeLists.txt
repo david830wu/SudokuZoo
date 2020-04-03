@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 
-project({{ProjectName}}Test
-        VERSION {{Version}}
-        DESCRIPTION "{{ProjectName}} test cases"
+project(SudokuZooTest
+        VERSION 0.1
+        DESCRIPTION "SudokuZoo test cases"
         LANGUAGES C CXX
 )
 
@@ -20,11 +20,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(Catch2 REQUIRED)
 
 # list and compile executable
-list(APPEND target_tests "{{ProjectName}}Test")
+list(APPEND target_tests "SudokuZooTest")
 
-if ("{{ProjectName}}Test" IN_LIST target_tests)
-    add_executable({{ProjectName}}Test)
-    target_sources({{ProjectName}}Test PUBLIC {{ProjectName}}Test.cpp)
-    target_link_libraries({{ProjectName}}Test PUBLIC Catch2::Catch2 {{ProjectName}}::{{ProjectName}})
-    add_test("{{ProjectName}}Test" {{ProjectName}}Test)
+if ("SudokuZooTest" IN_LIST target_tests)
+    add_executable(SudokuZooTest)
+    target_sources(SudokuZooTest PUBLIC SudokuZooTest.cpp)
+    target_link_libraries(SudokuZooTest PUBLIC Catch2::Catch2 SudokuZoo::SudokuZoo)
+    add_test("SudokuZooTest" SudokuZooTest)
 endif()

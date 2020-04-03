@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 
-project({{ProjectName}}Apps
-        VERSION {{Version}}
-        DESCRIPTION "{{ProjectName}} apps"
+project(SudokuZooApps
+        VERSION 0.1
+        DESCRIPTION "SudokuZoo apps"
         LANGUAGES C CXX
 )
 
@@ -36,6 +36,6 @@ if ("main" IN_LIST target_apps)
     PUBLIC
         Boost::boost
         Threads::Threads
-        {{ProjectName}}::{{ProjectName}}
+        SudokuZoo::SudokuZoo
     )
 endif()
