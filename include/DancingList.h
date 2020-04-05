@@ -229,7 +229,7 @@ namespace Details {
             size_type c = find_min_ones_col();
             cover_column(c);
             for(size_type r = D_[c]; r != c; r = D_[r]) {
-                partial_solution_.push_back(r);
+                partial_solution_.push_back(row_index_[r]);
                 for(size_type j = R_[r]; j != r; j = R_[j]) {
                     cover_column(C_[j]);
                 }
@@ -242,7 +242,28 @@ namespace Details {
             uncover_column(c);
         }
 
-        void print_solution() const {
+        void print_row_solution() const {
+            if(!solutions_.empty()) {
+                size_type sol_num = 1;
+                for(auto& sol : solutions_) {
+                    std::cout << "Sol_" << sol_num++ << ": ";
+                    std::vector<size_type> row_nodes;
+                    for(auto& row : sol) {
+                        row_nodes.push_back(row);
+                    }
+                    std::sort(row_nodes.begin(), row_nodes.end());
+                    std::cout << "[ ";
+                    for(auto iter = row_nodes.begin(); iter != row_nodes.end(); ++iter) {
+                        std::cout << *iter << ( iter != (row_nodes.end() - 1) ? ", " : " ]");
+                    }
+                    std::cout << std::endl;
+                }
+            } else {
+                std::cout << "Found no solutions." << std::endl;
+            }
+        }
+
+        void print_col_solution() const {
             if(!solutions_.empty()) {
                 size_type sol_num = 1;
                 for(auto& sol : solutions_) {
@@ -270,7 +291,7 @@ namespace Details {
 
         auto solve() {
             search(0);
-            print_solution();
+            print_row_solution();
         }
 
         bool operator==(const DancingList& rhs) const {
@@ -310,7 +331,6 @@ namespace Details {
             for(auto iter = S_.begin(); iter != S_.end(); ++iter) {
                 os << std::setw(5) << *iter << (iter != (S_.end() - 1) ? ", " : "]\n");
             }
-            
         }
 
     private:
