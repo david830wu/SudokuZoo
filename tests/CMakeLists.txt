@@ -21,10 +21,18 @@ find_package(Catch2 REQUIRED)
 
 # list and compile executable
 list(APPEND target_tests "SudokuZooTest")
+list(APPEND target_tests "DancingListTest")
 
 if ("SudokuZooTest" IN_LIST target_tests)
     add_executable(SudokuZooTest)
     target_sources(SudokuZooTest PUBLIC SudokuZooTest.cpp)
     target_link_libraries(SudokuZooTest PUBLIC Catch2::Catch2 SudokuZoo::SudokuZoo)
     add_test("SudokuZooTest" SudokuZooTest)
+endif()
+
+if ("DancingListTest" IN_LIST target_tests)
+    add_executable(DancingListTest)
+    target_sources(DancingListTest PUBLIC DancingListTest.cpp)
+    target_link_libraries(DancingListTest PUBLIC Catch2::Catch2 SudokuZoo::SudokuZoo)
+    add_test("DancingListTest" DancingListTest)
 endif()
