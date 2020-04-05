@@ -20,11 +20,19 @@ namespace SudokuZoo {
     public:
 
         friend std::ostream& operator<<(std::ostream& os, const Sudoku& sudoku) {
+            std::string row_line((sudoku.problem_scale + 1) * sudoku.house_scale + 1, '-');
+            row_line += '\n';
+            os << row_line;
             for(std::size_t row = 0; row < sudoku.problem_scale; ++row) {
+                os << "| ";
                 for(std::size_t col = 0; col < sudoku.problem_scale; ++col) {
-                    os << sudoku.get(row, col) << "\t";
+                    os << sudoku.get(row, col)
+                       << ((col % sudoku.house_scale == sudoku.house_scale - 1) ? " | " : "  ");
                 }
                 os << "\n";
+                if(row % sudoku.house_scale == sudoku.house_scale - 1) {
+                    os << row_line;
+                }
             }
             return os;
         }
