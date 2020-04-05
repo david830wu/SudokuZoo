@@ -13,7 +13,6 @@
 #include <iomanip>
 #include <set>
 #include <vector>
-#include <stack>
 
 namespace SudokuZoo { namespace ExactCoverProblem {
 
@@ -111,7 +110,7 @@ namespace Details {
 
         DancingList(std::initializer_list<Solution> li) 
             : num_cols_(0)
-        { }
+        {}
 
         DancingList(size_type num_cols)
             : num_cols_(num_cols)
@@ -156,7 +155,7 @@ namespace Details {
             return *this;
         }
 
-        DancingList& add_row(const std::vector<col_index_type>& row) {
+        DancingList& add_row(const std::vector<size_type>& row) {
             size_type ones_in_row = row.size();
             for(size_type col : row) {
                 row_index_.push_back(num_rows_);
@@ -180,7 +179,7 @@ namespace Details {
             return *this;
         }
 
-        void cover_column(col_index_type col) {
+        void cover_column(size_type col) {
             // cover column header
             L_[R_[col]] = L_[col];
             R_[L_[col]] = R_[col];
@@ -194,7 +193,7 @@ namespace Details {
                 }
             }
         }
-        void uncover_column(col_index_type col) {
+        void uncover_column(size_type col) {
             // uncover overlapped rows from down to up and from right to left
             for(size_type i = U_[col]; i != col; i = U_[i]) {
                 for(size_type j = L_[i]; j != i; j = L_[j]) {
@@ -208,9 +207,9 @@ namespace Details {
             R_[L_[col]] = col;
         }
 
-        col_index_type find_min_ones_col() const {
+        size_type find_min_ones_col() const {
             size_type min_ones = num_ones_;
-            col_index_type min_col = root_id_;
+            size_type min_col = root_id_;
             for(size_type j = R_[root_id_]; j != root_id_; j = R_[j]) {
                 if(S_[j] < min_ones) {
                     min_col = j;
@@ -227,7 +226,7 @@ namespace Details {
                 return;
             }
 
-            col_index_type c = find_min_ones_col();
+            size_type c = find_min_ones_col();
             cover_column(c);
             for(size_type r = D_[c]; r != c; r = D_[r]) {
                 partial_solution_.push_back(r);
@@ -315,9 +314,9 @@ namespace Details {
         }
 
     private:
-        std::vector<col_index_type> binary_to_col(const std::vector<binary_type>& binary_format) {
-            col_index_type col = 0;
-            std::vector<col_index_type> col_format;
+        std::vector<size_type> binary_to_col(const std::vector<binary_type>& binary_format) {
+            size_type col = 0;
+            std::vector<size_type> col_format;
             for(const auto& bin : binary_format) {
                 col++;
                 if(bin != 0) {
