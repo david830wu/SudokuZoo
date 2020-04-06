@@ -149,7 +149,6 @@ namespace Details {
             row_names_.push_back("col_header");
 
             partial_solution_.reserve(num_cols_);
-            std::cout << "init column headers = " << left_column_headers() << std::endl;
         }
 
         DancingList& add_row_by_binary(const std::vector<binary_type>& binary_row, const std::string& row_name = "") {
@@ -210,10 +209,6 @@ namespace Details {
                 cover_column(C_[i]);
                 removed_col.push_back(C_[i]);
             }
-            std::cout << "After add row " << row << "(" << row_names_[row] << "), removed [";
-            for(auto col : removed_col)
-                std::cout << col << ",";
-            std::cout << "]. And left columns = " << left_column_headers() << std::endl;
         }
 
         bool is_capable_condition(size_type row) {
@@ -304,32 +299,6 @@ namespace Details {
             }
         }
 
-        void print_col_solution() const {
-            if(!solutions_.empty()) {
-                size_type sol_num = 1;
-                for(auto& sol : solutions_) {
-                    std::cout << "Sol_" << sol_num++ << ": {" << std::endl;
-                    for(auto& node : sol) {
-                        std::vector<size_type> row_nodes;
-                        for(size_type j = R_[node]; j != node; j = R_[j]) {
-                            row_nodes.push_back(C_[j]);
-                        }
-                        row_nodes.push_back(C_[node]);
-                        std::sort(row_nodes.begin(), row_nodes.end());
-
-                        std::cout << "    [";
-                        for(auto iter = row_nodes.begin(); iter != row_nodes.end(); ++iter) {
-                            std::cout << *iter << ( iter != (row_nodes.end() - 1) ? ", " : " ]");
-                        }
-                        std::cout << std::endl;
-                    }
-                    std::cout << "}" << std::endl;
-                }
-            } else {
-                std::cout << "Found no solutions." << std::endl;
-            }
-        }
-
         size_type left_column_headers() const {
             size_type left_columns = 0;
             for(size_type i = R_[root_id_]; i != root_id_; i = R_[i]) 
@@ -338,7 +307,6 @@ namespace Details {
         }
 
         auto solve() {
-            std::cout << "partial solution has been level = " << partial_solution_.size() << std::endl;
             if(left_column_headers() == 0) {
                 std::cout << "has already been solved by init condition" << std::endl;
             }
