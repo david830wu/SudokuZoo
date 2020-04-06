@@ -108,17 +108,21 @@ namespace Details {
         using binary_type = int;
         using col_index_type = size_type;
 
-        DancingList(std::initializer_list<Solution> li) 
-            : num_cols_(0)
-        {}
-
         DancingList(size_type num_cols)
             : num_cols_(num_cols)
             , col_names_(num_cols + 1)
             , num_rows_(0)
             , num_ones_(0)
         {
-            // add root to dancing list
+            // structure
+            // column:    0,            1,            2, ...
+            // row 0 : root, col_header_1, col_header_2, ...
+            // row 1 :                0/1,          0/1, ... 
+            // row 2 :                0/1,          0/1, ... 
+            // row 3 : ...
+            // And ones are counted start from root, and column headers count as well
+
+            // add root to dancing list, root is in row 0, col 0
             col_names_[0] = "root";
             row_index_.push_back(0);
             col_index_.push_back(0);
@@ -183,9 +187,6 @@ namespace Details {
 
         void add_init_condition(size_type row) {
             // cover row, i.e. cover all columns in the row
-            if (row == 90) {
-                std::cout << std::endl;
-            }
             if(row > *row_index_.rbegin()) {
                 throw std::invalid_argument("Initial condition row index exceeds max row");
             }
@@ -259,7 +260,7 @@ namespace Details {
 
         void search(size_type level) {
             if(R_[root_id_] == root_id_) {
-                // empty except root lead to success solution
+                // row 0 being empty except root leads to a success solution
                 solutions_.push_back(partial_solution_);
                 return;
             }
@@ -306,7 +307,7 @@ namespace Details {
             return left_columns;
         }
 
-        auto solve() {
+        const auto& solve() {
             if(left_column_headers() == 0) {
                 std::cout << "has already been solved by init condition" << std::endl;
             }
@@ -355,13 +356,13 @@ namespace Details {
 
     private:
         std::vector<size_type> binary_to_col(const std::vector<binary_type>& binary_format) {
-            size_type col = 0;
+            size_type col = 1;
             std::vector<size_type> col_format;
             for(const auto& bin : binary_format) {
-                col++;
                 if(bin != 0) {
                     col_format.push_back(col);
                 }
+                col++;
             }
             return col_format;
         }

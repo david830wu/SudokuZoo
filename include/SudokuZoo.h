@@ -112,16 +112,16 @@ namespace SudokuZoo {
             // generate rows in dancing list
             for(size_type row = 0; row < problem_scale; ++row) {
             for(size_type col = 0; col < problem_scale; ++col) {
-            for(size_type val = 1; val <= problem_scale; ++val) {
+            for(size_type val = 0; val < problem_scale; ++val) {
                 auto house_id = to_house_id(row, col);
                 std::vector<size_type> element_set_move;
                 std::string element_set_name;
-                element_set_name = std::to_string(1+row) + std::to_string(1+col) + std::to_string(val);
+                element_set_name = std::to_string(1+row) + std::to_string(1+col) + std::to_string(val + 1);
                 // element_set_move = ({cell  constrain}, {row   constains}, {col   contrains}, {house constains})
                 element_set_move.push_back(1 + to_id(row, col));
-                element_set_move.push_back(1 + problem_scale * problem_scale * 1 + problem_scale * (val - 1) + row);
-                element_set_move.push_back(1 + problem_scale * problem_scale * 2 + problem_scale * (val - 1) + col);
-                element_set_move.push_back(1 + problem_scale * problem_scale * 3 + problem_scale * (val - 1) + house_id.first);
+                element_set_move.push_back(1 + problem_scale * problem_scale * 1 + problem_scale * val + row);
+                element_set_move.push_back(1 + problem_scale * problem_scale * 2 + problem_scale * val + col);
+                element_set_move.push_back(1 + problem_scale * problem_scale * 3 + problem_scale * val + house_id.first);
                 solver_.add_row(element_set_move, element_set_name);
             }}}
         }
@@ -130,8 +130,8 @@ namespace SudokuZoo {
             size_type row_num = 1;
             for(size_type row = 0; row < problem_scale; ++row) {
             for(size_type col = 0; col < problem_scale; ++col) {
-            for(size_type val = 1; val <= problem_scale; ++val) {
-                if(get(row, col) == val) {
+            for(size_type val = 0; val < problem_scale; ++val) {
+                if(get(row, col) == val + 1) {
                     solver_.add_init_condition(row_num);
                 }
                 row_num++;
