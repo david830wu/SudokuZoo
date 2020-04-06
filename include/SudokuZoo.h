@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "DancingList.h"
+
 #include <algorithm>
 #include <initializer_list>
 #include <iostream>
@@ -46,15 +48,21 @@ namespace SudokuZoo {
         Sudoku()
             : board_(problem_scale * problem_scale, 0)
             , house_table_(problem_scale, std::vector<size_type>(problem_scale, 0))
+            , solver_(problem_scale * problem_scale * num_constrains_)
         {
             init_house();
+            init_solver();
+            set_solver_init_cond();
         }
 
         Sudoku(std::initializer_list<element_type> li) 
             : board_(li)
             , house_table_(problem_scale, std::vector<size_type>(problem_scale, 0))
+            , solver_(problem_scale * problem_scale * num_constrains_)
         {
             init_house();
+            init_solver();
+            set_solver_init_cond();
         }
 
         bool is_valid() const {
@@ -94,7 +102,40 @@ namespace SudokuZoo {
         }
 
         int solve() {
+            solver_.solve();
+            solver_.print_row_solution();
             return 0;
+        }
+
+    protected:
+        void init_solver() {
+            // generate rows in dancing list
+            for(size_type row = 0; row < problem_scale; ++row) {
+            for(size_type col = 0; col < problem_scale; ++col) {
+            for(size_type val = 1; val <= problem_scale; ++val) {
+                auto house_id = to_house_id(row, col);
+                std::vector<size_type> element_set_move;
+                std::string element_set_name;
+                element_set_name = std::to_string(1+row) + std::to_string(1+col) + std::to_string(val);
+                // element_set_move = ({cell  constrain}, {row   constains}, {col   contrains}, {house constains})
+                element_set_move.push_back(1 + to_id(row, col));
+                element_set_move.push_back(1 + problem_scale * problem_scale * 1 + problem_scale * (val - 1) + row);
+                element_set_move.push_back(1 + problem_scale * problem_scale * 2 + problem_scale * (val - 1) + col);
+                element_set_move.push_back(1 + problem_scale * problem_scale * 3 + problem_scale * (val - 1) + house_id.first);
+                solver_.add_row(element_set_move, element_set_name);
+            }}}
+        }
+
+        void set_solver_init_cond() {
+            size_type row_num = 1;
+            for(size_type row = 0; row < problem_scale; ++row) {
+            for(size_type col = 0; col < problem_scale; ++col) {
+            for(size_type val = 1; val <= problem_scale; ++val) {
+                if(get(row, col) == val) {
+                    solver_.add_init_condition(row_num);
+                }
+                row_num++;
+            }}}
         }
 
     protected:
@@ -181,15 +222,19 @@ namespace SudokuZoo {
         size_type house_to_id(size_type house, size_type hid) const {
             return house_table_[house][hid];
         }
+        coordinate_type to_house_id(size_type row, size_type col) const {
+            size_type belonged_house = (row/house_scale)*house_scale  + (col/house_scale);
+            size_type house_cornor_row = (row/house_scale)*house_scale;
+            size_type house_cornor_col = (col/house_scale)*house_scale;
+            size_type id_in_house = (row - house_cornor_row)*house_scale + (col - house_cornor_col);
+            return std::make_pair(belonged_house, id_in_house);
+        }
 
         void init_house() {
             for(size_type row = 0; row < problem_scale; ++row) {
                 for(size_type col = 0; col < problem_scale; ++col) {
-                    size_type belonged_house = (row/house_scale)*house_scale  + (col/house_scale);
-                    size_type house_cornor_row = (row/house_scale)*house_scale;
-                    size_type house_cornor_col = (col/house_scale)*house_scale;
-                    size_type id_in_house = (row - house_cornor_row)*house_scale + (col - house_cornor_col);
-                    house_table_[belonged_house][id_in_house] = to_id(row, col);
+                    auto house_id = to_house_id(row, col);
+                    house_table_[house_id.first][house_id.second] = to_id(row, col);
                 }
             }
         }
@@ -197,6 +242,10 @@ namespace SudokuZoo {
     private:
         std::vector<element_type> board_;
         std::vector<std::vector<size_type>> house_table_;
+
+        using solver_type =ExactCoverProblem::Details::DancingList;
+        constexpr static size_type num_constrains_ = 4;
+        solver_type solver_;
     };
 
 }

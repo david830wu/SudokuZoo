@@ -21,7 +21,7 @@ namespace SudokuZoo { namespace ExactCoverProblem {
 
     class Solution {
     public:
-        using size_type = std::size_t;
+        using size_type = int;
 
         Solution() {}
 
@@ -104,7 +104,7 @@ namespace SudokuZoo { namespace ExactCoverProblem {
 namespace Details {
     class DancingList {
     public:
-        using size_type = std::size_t;
+        using size_type = int;
         using binary_type = int;
         using col_index_type = size_type;
 
@@ -146,8 +146,10 @@ namespace Details {
             }
             R_[num_cols_] = root_id_;
             num_rows_++;
+            row_names_.push_back("col_header");
 
             partial_solution_.reserve(num_cols_);
+            std::cout << "init column headers = " << left_column_headers() << std::endl;
         }
 
         DancingList& add_row_by_binary(const std::vector<binary_type>& binary_row, const std::string& row_name = "") {
@@ -182,6 +184,9 @@ namespace Details {
 
         void add_init_condition(size_type row) {
             // cover row, i.e. cover all columns in the row
+            if (row == 90) {
+                std::cout << std::endl;
+            }
             if(row > *row_index_.rbegin()) {
                 throw std::invalid_argument("Initial condition row index exceeds max row");
             }
@@ -192,11 +197,23 @@ namespace Details {
 
             partial_solution_.push_back(row);
             // find the first node of the row
-            for(size_type j = 0; j < row_index_.size(); ++j) {
+            size_type j = 0;
+            for(j = 0; j < row_index_.size(); ++j) {
                 if(row_index_[j] == row) {
-                    cover_column(C_[j]);
+                    break;
                 }
             }
+            std::vector<int> removed_col;
+            cover_column(C_[j]);
+            removed_col.push_back(C_[j]);
+            for(size_type i = R_[j]; i != j; i = R_[i]){
+                cover_column(C_[i]);
+                removed_col.push_back(C_[i]);
+            }
+            std::cout << "After add row " << row << "(" << row_names_[row] << "), removed [";
+            for(auto col : removed_col)
+                std::cout << col << ",";
+            std::cout << "]. And left columns = " << left_column_headers() << std::endl;
         }
 
         bool is_capable_condition(size_type row) {
@@ -273,16 +290,14 @@ namespace Details {
                 size_type sol_num = 1;
                 for(auto& sol : solutions_) {
                     std::cout << "Sol_" << sol_num++ << ": ";
-                    std::vector<size_type> row_nodes;
-                    for(auto& row : sol) {
-                        row_nodes.push_back(row);
+                    std::vector<size_type> sol_row = sol;
+                    std::sort(sol_row.begin(), sol_row.end());
+                    std::cout << "[ \n";
+                    for(size_type i = 0; i < sol_row.size(); ++i) {
+                        size_type selected_row = sol_row[i];
+                        std::cout << i << ": " <<  selected_row << "(" << row_names_[selected_row] << ")" << ( i != (sol_row.size() - 1) ? ", \n" : "\n");
                     }
-                    std::sort(row_nodes.begin(), row_nodes.end());
-                    std::cout << "[ ";
-                    for(size_type i = 0; i < row_nodes.size(); ++i) {
-                        std::cout << row_nodes[i] << "(" << row_names_[i] << ")" << ( i != (row_nodes.size() - 1) ? ", " : " ]");
-                    }
-                    std::cout << std::endl;
+                    std::cout << "]" << std::endl;
                 }
             } else {
                 std::cout << "Found no solutions." << std::endl;
@@ -315,7 +330,18 @@ namespace Details {
             }
         }
 
+        size_type left_column_headers() const {
+            size_type left_columns = 0;
+            for(size_type i = R_[root_id_]; i != root_id_; i = R_[i]) 
+                left_columns++;
+            return left_columns;
+        }
+
         auto solve() {
+            std::cout << "partial solution has been level = " << partial_solution_.size() << std::endl;
+            if(left_column_headers() == 0) {
+                std::cout << "has already been solved by init condition" << std::endl;
+            }
             search(partial_solution_.size());
             return solutions_;
         }
