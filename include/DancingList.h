@@ -180,6 +180,31 @@ namespace Details {
             return *this;
         }
 
+        void add_init_condition(size_type row) {
+            // cover row, i.e. cover all columns in the row
+            if(row > *row_index_.rbegin()) {
+                throw std::invalid_argument("Initial condition row index exceeds max row");
+            }
+
+            if(!is_capable_condition(row)){
+                throw std::runtime_error("Incapable initial condition");
+            }
+
+            partial_solution_.push_back(row);
+            // find the first node of the row
+            for(size_type j = 0; j < row_index_.size(); ++j) {
+                if(row_index_[j] == row) {
+                    cover_column(C_[j]);
+                }
+            }
+        }
+
+        bool is_capable_condition(size_type row) {
+            // TODO: scan all partial solution inserted before to 
+            // check that no one appears in the same column
+            return true;
+        }
+
         void cover_column(size_type col) {
             // cover column header
             L_[R_[col]] = L_[col];
@@ -291,8 +316,8 @@ namespace Details {
         }
 
         auto solve() {
-            search(0);
-            print_row_solution();
+            search(partial_solution_.size());
+            return solutions_;
         }
 
         bool operator==(const DancingList& rhs) const {

@@ -105,11 +105,24 @@ TEST_CASE("DancingList", "[DancingList]") {
         using SudokuZoo::ExactCoverProblem::Details::DancingList;
 
         DancingList problem(3);
-        problem.add_row_by_binary({1, 0, 1})   // row 0
-               .add_row_by_binary({1, 1, 0})   // row 1
-               .add_row_by_binary({0, 1, 0})   // row 2
-               .add_row_by_binary({0, 0, 1});  // row 3
+        problem.add_row_by_binary({1, 0, 1}, "101")   // row 1
+               .add_row_by_binary({1, 1, 0}, "110")   // row 2
+               .add_row_by_binary({0, 1, 0}, "010")   // row 3
+               .add_row_by_binary({0, 0, 1}, "001");  // row 4
         problem.solve();
+        problem.print_row_solution();
+    }
+    SECTION("InitCondSearch") {
+        using SudokuZoo::ExactCoverProblem::Details::DancingList;
+
+        DancingList problem(3);
+        problem.add_row_by_binary({1, 0, 1}, "101")   // row 1
+               .add_row_by_binary({1, 1, 0}, "110")   // row 2
+               .add_row_by_binary({0, 1, 0}, "010")   // row 3
+               .add_row_by_binary({0, 0, 1}, "001");  // row 4
+        problem.add_init_condition(1);
+        problem.solve();
+        problem.print_row_solution();
     }
 
 }
