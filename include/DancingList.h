@@ -150,12 +150,12 @@ namespace Details {
             partial_solution_.reserve(num_cols_);
         }
 
-        DancingList& add_row_by_binary(const std::vector<binary_type>& binary_row) {
-            add_row(binary_to_col(binary_row));
+        DancingList& add_row_by_binary(const std::vector<binary_type>& binary_row, const std::string& row_name = "") {
+            add_row(binary_to_col(binary_row), row_name);
             return *this;
         }
 
-        DancingList& add_row(const std::vector<size_type>& row) {
+        DancingList& add_row(const std::vector<size_type>& row, const std::string& row_name = "") {
             size_type ones_in_row = row.size();
             for(size_type col : row) {
                 row_index_.push_back(num_rows_);
@@ -175,6 +175,7 @@ namespace Details {
             size_type row_first = row_last - ones_in_row + 1;
             L_[row_first] = row_last;
             R_[row_last] = row_first;
+            row_names_.push_back(row_name);
             num_rows_++;
             return *this;
         }
@@ -253,8 +254,8 @@ namespace Details {
                     }
                     std::sort(row_nodes.begin(), row_nodes.end());
                     std::cout << "[ ";
-                    for(auto iter = row_nodes.begin(); iter != row_nodes.end(); ++iter) {
-                        std::cout << *iter << ( iter != (row_nodes.end() - 1) ? ", " : " ]");
+                    for(size_type i = 0; i < row_nodes.size(); ++i) {
+                        std::cout << row_nodes[i] << "(" << row_names_[i] << ")" << ( i != (row_nodes.size() - 1) ? ", " : " ]");
                     }
                     std::cout << std::endl;
                 }
@@ -351,11 +352,13 @@ namespace Details {
         static const size_type root_id_ = 0;
         const size_type num_cols_;
 
-        // array of num_cols
+        // array of num_cols elements
         std::vector<std::string> col_names_;
         std::vector<size_type> S_;
+        // arry of num_rows
+        std::vector<std::string> row_names_;
 
-        // array of num_ones; row start from 1 to num_rows;
+        // array of num_ones elements; row start from 1 to num_rows;
         size_type num_rows_, num_ones_;
         // ones are enumerated from 0 to num_ones;
         std::vector<size_type> row_index_; // Note: row start from 1
