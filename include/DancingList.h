@@ -185,6 +185,12 @@ namespace Details {
             return *this;
         }
 
+        const std::string& get_row_name(size_type row) const {
+            if(row == 0 || row >= row_names_.size())
+                throw std::out_of_range("row index is not valid");
+            return row_names_[row];
+        }
+
         void add_init_condition(size_type row) {
             // cover row, i.e. cover all columns in the row
             if(row > *row_index_.rbegin()) {
@@ -287,7 +293,7 @@ namespace Details {
                 for(auto& sol : solutions_) {
                     std::cout << "Sol_" << sol_num++ << ": ";
                     std::vector<size_type> sol_row = sol;
-                    std::sort(sol_row.begin(), sol_row.end());
+                    // std::sort(sol_row.begin(), sol_row.end());
                     std::cout << "[ \n";
                     for(size_type i = 0; i < sol_row.size(); ++i) {
                         size_type selected_row = sol_row[i];

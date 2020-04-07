@@ -9,6 +9,7 @@
 
 #include "DancingList.h"
 
+#include <cassert>
 #include <algorithm>
 #include <initializer_list>
 #include <iostream>
@@ -28,7 +29,7 @@ namespace SudokuZoo {
             for(std::size_t row = 0; row < sudoku.problem_scale; ++row) {
                 os << "| ";
                 for(std::size_t col = 0; col < sudoku.problem_scale; ++col) {
-                    os << sudoku.get(row, col)
+                    os << (sudoku.get(row, col) == 0 ? " " : std::to_string(sudoku.get(row, col)) )
                        << ((col % sudoku.house_scale == sudoku.house_scale - 1) ? " | " : "  ");
                 }
                 os << "\n";
@@ -57,6 +58,7 @@ namespace SudokuZoo {
 
         Sudoku(std::initializer_list<element_type> li) 
             : board_(li)
+            , origin_problem_(li)
             , house_table_(problem_scale, std::vector<size_type>(problem_scale, 0))
             , solver_(problem_scale * problem_scale * num_constrains_)
         {
@@ -90,7 +92,16 @@ namespace SudokuZoo {
         }
 
         bool set(size_type row, size_type col, element_type value) {
-            board_[to_id(row, col)] = value;
+            if(get(row, col) == 0) {
+                board_[to_id(row, col)] = value;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        void reset() {
+            board_ = origin_problem_;
         }
         
         element_type get(size_type row, size_type col) const {
@@ -102,8 +113,26 @@ namespace SudokuZoo {
         }
 
         int solve() {
-            solver_.solve();
-            solver_.print_row_solution();
+            const auto& solutions = solver_.solve();
+            for(size_type sol_index = 0; sol_index < solutions.size(); ++sol_index) {
+                const auto& sol = solutions[sol_index];
+                std::vector<fill_op_t> fill_sols;
+                for(size_type i = 0; i < sol.size(); ++i) {
+                    std::string row_name = solver_.get_row_name(sol[i]);
+                    fill_sols.push_back(std::make_tuple(
+                        row_name[0] - '1',
+                        row_name[1] - '1',
+                        row_name[2] - '0'
+                    ));
+                }
+                fill_solution(fill_sols);
+                std::cout << "Solution[" << 1 + sol_index << "] = " << std::endl;
+                std::cout << *this << std::endl;
+                if(sol_index != solutions.size() - 1) {
+                    // leave last solution to be filled
+                    reset();
+                }
+            }
             return 0;
         }
 
@@ -136,6 +165,22 @@ namespace SudokuZoo {
                 }
                 row_num++;
             }}}
+        }
+
+        using fill_op_t = std::tuple<size_type, size_type, element_type>;
+        struct FillOpField {
+            static constexpr std::size_t row = 0;
+            static constexpr std::size_t col = 1;
+            static constexpr std::size_t val = 2;
+        };
+        void fill_solution(const std::vector<fill_op_t>& solution) {
+            for(const auto& sol : solution) {
+                set(
+                    std::get<FillOpField::row>(sol),
+                    std::get<FillOpField::col>(sol),
+                    std::get<FillOpField::val>(sol)
+                );
+            }
         }
 
     protected:
@@ -241,6 +286,7 @@ namespace SudokuZoo {
 
     private:
         std::vector<element_type> board_;
+        std::vector<element_type> origin_problem_;
         std::vector<std::vector<size_type>> house_table_;
 
         using solver_type =ExactCoverProblem::Details::DancingList;
