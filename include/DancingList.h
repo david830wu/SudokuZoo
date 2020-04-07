@@ -21,7 +21,7 @@ namespace SudokuZoo { namespace ExactCoverProblem {
 
     class Solution {
     public:
-        using size_type = std::size_t;
+        using size_type = int;
 
         Solution() {}
 
@@ -104,13 +104,9 @@ namespace SudokuZoo { namespace ExactCoverProblem {
 namespace Details {
     class DancingList {
     public:
-        using size_type = std::size_t;
+        using size_type = int;
         using binary_type = int;
         using col_index_type = size_type;
-
-        DancingList(std::initializer_list<Solution> li) 
-            : num_cols_(0)
-        {}
 
         DancingList(size_type num_cols)
             : num_cols_(num_cols)
@@ -118,7 +114,15 @@ namespace Details {
             , num_rows_(0)
             , num_ones_(0)
         {
-            // add root to dancing list
+            // structure
+            // column:    0,            1,            2, ...
+            // row 0 : root, col_header_1, col_header_2, ...
+            // row 1 :                0/1,          0/1, ... 
+            // row 2 :                0/1,          0/1, ... 
+            // row 3 : ...
+            // And ones are counted start from root, and column headers count as well
+
+            // add root to dancing list, root is in row 0, col 0
             col_names_[0] = "root";
             row_index_.push_back(0);
             col_index_.push_back(0);
@@ -146,6 +150,7 @@ namespace Details {
             }
             R_[num_cols_] = root_id_;
             num_rows_++;
+            row_names_.push_back("col_header");
 
             partial_solution_.reserve(num_cols_);
         }
@@ -180,6 +185,12 @@ namespace Details {
             return *this;
         }
 
+        const std::string& get_row_name(size_type row) const {
+            if(row == 0 || row >= row_names_.size())
+                throw std::out_of_range("row index is not valid");
+            return row_names_[row];
+        }
+
         void add_init_condition(size_type row) {
             // cover row, i.e. cover all columns in the row
             if(row > *row_index_.rbegin()) {
@@ -192,10 +203,18 @@ namespace Details {
 
             partial_solution_.push_back(row);
             // find the first node of the row
-            for(size_type j = 0; j < row_index_.size(); ++j) {
+            size_type j = 0;
+            for(j = 0; j < row_index_.size(); ++j) {
                 if(row_index_[j] == row) {
-                    cover_column(C_[j]);
+                    break;
                 }
+            }
+            std::vector<int> removed_col;
+            cover_column(C_[j]);
+            removed_col.push_back(C_[j]);
+            for(size_type i = R_[j]; i != j; i = R_[i]){
+                cover_column(C_[i]);
+                removed_col.push_back(C_[i]);
             }
         }
 
@@ -247,7 +266,7 @@ namespace Details {
 
         void search(size_type level) {
             if(R_[root_id_] == root_id_) {
-                // empty except root lead to success solution
+                // row 0 being empty except root leads to a success solution
                 solutions_.push_back(partial_solution_);
                 return;
             }
@@ -273,49 +292,31 @@ namespace Details {
                 size_type sol_num = 1;
                 for(auto& sol : solutions_) {
                     std::cout << "Sol_" << sol_num++ << ": ";
-                    std::vector<size_type> row_nodes;
-                    for(auto& row : sol) {
-                        row_nodes.push_back(row);
+                    std::vector<size_type> sol_row = sol;
+                    // std::sort(sol_row.begin(), sol_row.end());
+                    std::cout << "[ \n";
+                    for(size_type i = 0; i < sol_row.size(); ++i) {
+                        size_type selected_row = sol_row[i];
+                        std::cout << i << ": " <<  selected_row << "(" << row_names_[selected_row] << ")" << ( i != (sol_row.size() - 1) ? ", \n" : "\n");
                     }
-                    std::sort(row_nodes.begin(), row_nodes.end());
-                    std::cout << "[ ";
-                    for(size_type i = 0; i < row_nodes.size(); ++i) {
-                        std::cout << row_nodes[i] << "(" << row_names_[i] << ")" << ( i != (row_nodes.size() - 1) ? ", " : " ]");
-                    }
-                    std::cout << std::endl;
+                    std::cout << "]" << std::endl;
                 }
             } else {
                 std::cout << "Found no solutions." << std::endl;
             }
         }
 
-        void print_col_solution() const {
-            if(!solutions_.empty()) {
-                size_type sol_num = 1;
-                for(auto& sol : solutions_) {
-                    std::cout << "Sol_" << sol_num++ << ": {" << std::endl;
-                    for(auto& node : sol) {
-                        std::vector<size_type> row_nodes;
-                        for(size_type j = R_[node]; j != node; j = R_[j]) {
-                            row_nodes.push_back(C_[j]);
-                        }
-                        row_nodes.push_back(C_[node]);
-                        std::sort(row_nodes.begin(), row_nodes.end());
-
-                        std::cout << "    [";
-                        for(auto iter = row_nodes.begin(); iter != row_nodes.end(); ++iter) {
-                            std::cout << *iter << ( iter != (row_nodes.end() - 1) ? ", " : " ]");
-                        }
-                        std::cout << std::endl;
-                    }
-                    std::cout << "}" << std::endl;
-                }
-            } else {
-                std::cout << "Found no solutions." << std::endl;
-            }
+        size_type left_column_headers() const {
+            size_type left_columns = 0;
+            for(size_type i = R_[root_id_]; i != root_id_; i = R_[i]) 
+                left_columns++;
+            return left_columns;
         }
 
-        auto solve() {
+        const auto& solve() {
+            if(left_column_headers() == 0) {
+                std::cout << "has already been solved by init condition" << std::endl;
+            }
             search(partial_solution_.size());
             return solutions_;
         }
@@ -361,13 +362,13 @@ namespace Details {
 
     private:
         std::vector<size_type> binary_to_col(const std::vector<binary_type>& binary_format) {
-            size_type col = 0;
+            size_type col = 1;
             std::vector<size_type> col_format;
             for(const auto& bin : binary_format) {
-                col++;
                 if(bin != 0) {
                     col_format.push_back(col);
                 }
+                col++;
             }
             return col_format;
         }
