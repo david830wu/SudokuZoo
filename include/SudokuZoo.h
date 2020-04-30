@@ -91,9 +91,13 @@ namespace SudokuZoo {
             return is_completed() && is_valid();
         }
 
-        bool set(size_type row, size_type col, element_type value) {
+        void set(size_type row, size_type col, element_type value) {
+            board_[to_id(row, col)] = value;
+        }
+
+        bool fill(size_type row, size_type col, element_type value) {
             if(get(row, col) == 0) {
-                board_[to_id(row, col)] = value;
+                set(row, col, value);
                 return true;
             } else {
                 return false;

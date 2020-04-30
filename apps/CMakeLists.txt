@@ -16,7 +16,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # list and compile executable
-list(APPEND target_apps "main")
+#list(APPEND target_apps "main")
+list(APPEND target_apps "Solver")
 
 if ("main" IN_LIST target_apps)
     add_executable(main)
@@ -36,6 +37,28 @@ if ("main" IN_LIST target_apps)
     PUBLIC
         Boost::boost
         Threads::Threads
+        SudokuZoo::SudokuZoo
+    )
+endif()
+
+if ("Solver" IN_LIST target_apps)
+    set(target_name "Solver")
+    add_executable(${target_name})
+    target_sources(
+        ${target_name}
+    PUBLIC
+        Solver/${target_name}.cpp
+    )
+    target_include_directories(
+        ${target_name}
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/apps/Solver>
+        $<INSTALL_INTERFACE:include>
+    )
+    target_link_libraries(
+        ${target_name}
+    PUBLIC
         SudokuZoo::SudokuZoo
     )
 endif()
