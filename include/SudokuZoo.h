@@ -48,12 +48,12 @@ namespace SudokuZoo {
 
         Sudoku()
             : board_(problem_scale * problem_scale, 0)
+            , origin_problem_(problem_scale * problem_scale, 0)
             , house_table_(problem_scale, std::vector<size_type>(problem_scale, 0))
             , solver_(problem_scale * problem_scale * num_constrains_)
         {
             init_house();
             init_solver();
-            set_solver_init_cond();
         }
 
         Sudoku(std::initializer_list<element_type> li) 
@@ -64,7 +64,6 @@ namespace SudokuZoo {
         {
             init_house();
             init_solver();
-            set_solver_init_cond();
         }
 
         bool is_valid() const {
@@ -91,9 +90,14 @@ namespace SudokuZoo {
             return is_completed() && is_valid();
         }
 
-        bool set(size_type row, size_type col, element_type value) {
+        void set(size_type row, size_type col, element_type value) {
+            origin_problem_[to_id(row, col)] = value;
+            board_[to_id(row, col)] = value;
+        }
+
+        bool fill(size_type row, size_type col, element_type value) {
             if(get(row, col) == 0) {
-                board_[to_id(row, col)] = value;
+                set(row, col, value);
                 return true;
             } else {
                 return false;
@@ -113,6 +117,7 @@ namespace SudokuZoo {
         }
 
         int solve() {
+            set_solver_init_cond();
             const auto& solutions = solver_.solve();
             for(size_type sol_index = 0; sol_index < solutions.size(); ++sol_index) {
                 const auto& sol = solutions[sol_index];
