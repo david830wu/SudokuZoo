@@ -63,6 +63,7 @@ public:
     }
 
     void solve() {
+        std::cout << "Start solving..." << std::endl;
         sudoku_.solve();
     }
     void print_sudoku() {
