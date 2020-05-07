@@ -15,14 +15,6 @@ class Solver {
 public:
     const static int k_scale = 9;
 
-    void welcome_msg() {
-        std::cout << "Welcome to SodokuZoo solver" << std::endl;
-    }
-
-    void say_goodbay() {
-        std::cout << "Bye~" << std::endl;
-    }
-
     void print_col_header() {
         std::cout << "Col   ";
         for(int i = 1; i <= k_scale; ++i) {
@@ -66,9 +58,15 @@ public:
         std::cout << "Start solving..." << std::endl;
         sudoku_.solve();
     }
+
+    bool is_solved() const {
+        return sudoku_.is_solved();
+    }
+
     void print_sudoku() {
         std::cout << sudoku_ << std::endl;
     }
+
 private:
     using row_t = std::array<int, k_scale>;
 
@@ -84,11 +82,12 @@ private:
 
     bool input_row(int row) {
         row_t filling_row;
+        filling_row.fill(0);
         std::cout << "Row " << row + 1 << ": ";
         std::string row_line;
         std::getline(std::cin, row_line);
         std::stringstream ss(row_line);
-        for(int i = 0; i < k_scale; ++i) {
+        for(int i = 0; i < k_scale && !ss.eof(); ++i) {
             ss >> filling_row[i];
         }
         if(is_row_valid(filling_row)) {
@@ -103,7 +102,7 @@ private:
     }
 
     bool verify() {
-
+        return true;
     }
 
 private:

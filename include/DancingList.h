@@ -47,6 +47,7 @@ namespace SudokuZoo { namespace ExactCoverProblem {
     class SolutionSet {
     public:
         friend std::ostream& operator<<(std::ostream& os, const SolutionSet& s_set) {
+            return os;
         }
 
         using size_type = std::size_t;
@@ -88,8 +89,10 @@ namespace SudokuZoo { namespace ExactCoverProblem {
         }
 
         int add_row(const Row& row) {
+            return 0;
         }
         int add_row(Row&& row) {
+            return 0;
         }
 
         SolutionSet solve() {
