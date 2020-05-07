@@ -19,6 +19,14 @@ const std::unordered_map<std::string, char> command_encoder {
     {"help"    , 'H'}
 };
 
+void welcome_msg() {
+    std::cout << "Welcome to SodokuZoo solver" << std::endl;
+}
+
+void say_goodbay() {
+    std::cout << "Bye~" << std::endl;
+}
+
 void usage() {
     std::cout << "Command list:" << std::endl;
     std::cout << "question) ask a sodoku problem"    << std::endl;
@@ -40,9 +48,9 @@ std::string get_command() {
 int main() {
 
     bool stop = false;
-    SudokuZoo::SolverApp::Solver solver;
+    std::unique_ptr<SudokuZoo::SolverApp::Solver> p_solver; 
 
-    solver.welcome_msg();
+    welcome_msg();
     usage();
     std::string command;
     while(!stop) {
@@ -53,20 +61,32 @@ int main() {
         } catch (std::out_of_range& e) {
             std::cerr << "Unknown command: " << command << std::endl;
             usage();
+            continue;
         }
         switch(comm) {
         case 'Q':
-            solver.input_sudoku();
+            p_solver = std::make_unique<SudokuZoo::SolverApp::Solver>();
+            p_solver->input_sudoku();
             std::cout << "Problem Set:" << std::endl;
-            solver.print_sudoku();
+            p_solver->print_sudoku();
             break;
         case 'R':
-            solver.revise_sudoku();
-            std::cout << "Revised Problem Set:" << std::endl;
-            solver.print_sudoku();
+            if(p_solver->is_solved()) {
+                std::cout << "Problem has been solved as following. To start a new one, please Enter \"question\"." << std::endl;
+                p_solver->print_sudoku();
+            } else {
+                p_solver->revise_sudoku();
+                std::cout << "Revised Problem Set:" << std::endl;
+                p_solver->print_sudoku();
+            }
             break;
         case 'S':
-            solver.solve();
+            if(p_solver->is_solved()) {
+                std::cout << "Problem has been solved." << std::endl;
+                p_solver->print_sudoku();
+            } else {
+                p_solver->solve();
+            }
             break;
         case 'X':
             stop = true;
@@ -78,7 +98,7 @@ int main() {
             break;
         }
     }
-    solver.say_goodbay();
+    say_goodbay();
 
     return 0;
 }
