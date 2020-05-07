@@ -58,44 +58,43 @@ int main() {
         command_t comm;
         try {
             comm = command_encoder.at(command);
+            switch(comm) {
+            case 'Q':
+                p_solver = std::make_unique<SudokuZoo::SolverApp::Solver>();
+                p_solver->input_sudoku();
+                std::cout << "Problem Set:" << std::endl;
+                p_solver->print_sudoku();
+                break;
+            case 'R':
+                if(p_solver->is_solved()) {
+                    std::cout << "Problem has been solved as following. To start a new one, please Enter \"question\"." << std::endl;
+                    p_solver->print_sudoku();
+                } else {
+                    p_solver->revise_sudoku();
+                    std::cout << "Revised Problem Set:" << std::endl;
+                    p_solver->print_sudoku();
+                }
+                break;
+            case 'S':
+                if(p_solver->is_solved()) {
+                    std::cout << "Problem has been solved." << std::endl;
+                    p_solver->print_sudoku();
+                } else {
+                    p_solver->solve();
+                }
+                break;
+            case 'X':
+                stop = true;
+                break;
+            case 'H':
+                usage();
+                break;
+            default:
+                break;
+            }
         } catch (std::out_of_range& e) {
             std::cerr << "Unknown command: " << command << std::endl;
             usage();
-            continue;
-        }
-        switch(comm) {
-        case 'Q':
-            p_solver = std::make_unique<SudokuZoo::SolverApp::Solver>();
-            p_solver->input_sudoku();
-            std::cout << "Problem Set:" << std::endl;
-            p_solver->print_sudoku();
-            break;
-        case 'R':
-            if(p_solver->is_solved()) {
-                std::cout << "Problem has been solved as following. To start a new one, please Enter \"question\"." << std::endl;
-                p_solver->print_sudoku();
-            } else {
-                p_solver->revise_sudoku();
-                std::cout << "Revised Problem Set:" << std::endl;
-                p_solver->print_sudoku();
-            }
-            break;
-        case 'S':
-            if(p_solver->is_solved()) {
-                std::cout << "Problem has been solved." << std::endl;
-                p_solver->print_sudoku();
-            } else {
-                p_solver->solve();
-            }
-            break;
-        case 'X':
-            stop = true;
-            break;
-        case 'H':
-            usage();
-            break;
-        default:
-            break;
         }
     }
     say_goodbay();
