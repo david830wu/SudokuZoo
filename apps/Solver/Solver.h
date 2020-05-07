@@ -82,11 +82,12 @@ private:
 
     bool input_row(int row) {
         row_t filling_row;
+        filling_row.fill(0);
         std::cout << "Row " << row + 1 << ": ";
         std::string row_line;
         std::getline(std::cin, row_line);
         std::stringstream ss(row_line);
-        for(int i = 0; i < k_scale; ++i) {
+        for(int i = 0; i < k_scale && !ss.eof(); ++i) {
             ss >> filling_row[i];
         }
         if(is_row_valid(filling_row)) {
