@@ -10,7 +10,7 @@ SudokuZoo is a collection of varies sudokus.
 
 ## Varies Solvers
 
-- Knuth's dancing list algorithm for exact cover problem
+- Knuth's dancing links algorithm for exact cover problem
 - Backtracking algorithm
 - Brute force attack algorithm
 
