@@ -1,4 +1,4 @@
-/* DancingList.h
+/* DancingLinks.h
  * 
  * Author: Wentao and Jiejun
  * Created: 20200404
@@ -105,13 +105,13 @@ namespace SudokuZoo { namespace ExactCoverProblem {
 
 
 namespace Details {
-    class DancingList {
+    class DancingLinks {
     public:
         using size_type = int;
         using binary_type = int;
         using col_index_type = size_type;
 
-        DancingList(size_type num_cols)
+        DancingLinks(size_type num_cols)
             : num_cols_(num_cols)
             , col_names_(num_cols + 1)
             , num_rows_(0)
@@ -158,12 +158,12 @@ namespace Details {
             partial_solution_.reserve(num_cols_);
         }
 
-        DancingList& add_row_by_binary(const std::vector<binary_type>& binary_row, const std::string& row_name = "") {
+        DancingLinks& add_row_by_binary(const std::vector<binary_type>& binary_row, const std::string& row_name = "") {
             add_row(binary_to_col(binary_row), row_name);
             return *this;
         }
 
-        DancingList& add_row(const std::vector<size_type>& row, const std::string& row_name = "") {
+        DancingLinks& add_row(const std::vector<size_type>& row, const std::string& row_name = "") {
             size_type ones_in_row = row.size();
             for(size_type col : row) {
                 row_index_.push_back(num_rows_);
@@ -324,7 +324,7 @@ namespace Details {
             return solutions_;
         }
 
-        bool operator==(const DancingList& rhs) const {
+        bool operator==(const DancingLinks& rhs) const {
             return true;
         }
 

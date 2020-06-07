@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "DancingList.h"
+#include "DancingLinks.h"
 
 #include <cassert>
 #include <algorithm>
@@ -294,7 +294,7 @@ namespace SudokuZoo {
         std::vector<element_type> origin_problem_;
         std::vector<std::vector<size_type>> house_table_;
 
-        using solver_type =ExactCoverProblem::Details::DancingList;
+        using solver_type =ExactCoverProblem::Details::DancingLinks;
         constexpr static size_type num_constrains_ = 4;
         solver_type solver_;
     };

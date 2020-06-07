@@ -55,10 +55,10 @@
             "preLaunchTask": "cmake-debug"
         },
         {
-            "name": "DancingListTest",
+            "name": "DancingLinksTest",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/tests/DancingListTest",
+            "program": "${workspaceFolder}/build/tests/DancingLinksTest",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build",

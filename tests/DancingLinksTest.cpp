@@ -1,20 +1,20 @@
-/* DancingListTest.cpp
+/* DancingLinksTest.cpp
 * 
 * Author: Wentao and Jiejun
 * Created: 20200404 
 * Version: 0.1
 */
 
-#include "DancingList.h"
+#include "DancingLinks.h"
 
 #define CATCH_CONFIG_MAIN
 #include "catch2/catch.hpp"
 
-TEST_CASE("DancingList", "[DancingList]") {
+TEST_CASE("DancingLinks", "[DancingLinks]") {
     SECTION("AddRow") {
-        using SudokuZoo::ExactCoverProblem::Details::DancingList;
+        using SudokuZoo::ExactCoverProblem::Details::DancingLinks;
 
-        DancingList problem(7);
+        DancingLinks problem(7);
 
         problem.add_row_by_binary( {0, 0, 1, 0, 1, 1, 0} );
 
@@ -22,9 +22,9 @@ TEST_CASE("DancingList", "[DancingList]") {
 
     }
     SECTION("CoverColumn") {
-        using SudokuZoo::ExactCoverProblem::Details::DancingList;
+        using SudokuZoo::ExactCoverProblem::Details::DancingLinks;
 
-        DancingList problem(7);
+        DancingLinks problem(7);
         problem.add_row_by_binary({0, 0, 1, 0, 1, 1, 0})
                .add_row_by_binary({1, 0, 0, 1, 0, 0, 1})
                .add_row_by_binary({0, 1, 1, 0, 0, 1, 0})
@@ -34,7 +34,7 @@ TEST_CASE("DancingList", "[DancingList]") {
 
         problem.cover_column(0);
 
-        DancingList expected(6);
+        DancingLinks expected(6);
         expected.add_row_by_binary({0, 1, 0, 1, 1, 0})
                 .add_row_by_binary({1, 1, 0, 0, 1, 0})
                 .add_row_by_binary({1, 0, 0, 0, 0, 1})
@@ -42,9 +42,9 @@ TEST_CASE("DancingList", "[DancingList]") {
         REQUIRE(problem == expected);
     }
     SECTION("UncoverColumn") {
-        using SudokuZoo::ExactCoverProblem::Details::DancingList;
+        using SudokuZoo::ExactCoverProblem::Details::DancingLinks;
 
-        DancingList problem(7);
+        DancingLinks problem(7);
         problem.add_row_by_binary({0, 0, 1, 0, 1, 1, 0})
                .add_row_by_binary({1, 0, 0, 1, 0, 0, 1})
                .add_row_by_binary({0, 1, 1, 0, 0, 1, 0})
@@ -53,7 +53,7 @@ TEST_CASE("DancingList", "[DancingList]") {
                .add_row_by_binary({0, 0, 0, 1, 1, 0, 1});
         problem.cover_column(0);
         problem.uncover_column(0);
-        DancingList expected(7);
+        DancingLinks expected(7);
         expected.add_row_by_binary({0, 0, 1, 0, 1, 1, 0})
                 .add_row_by_binary({1, 0, 0, 1, 0, 0, 1})
                 .add_row_by_binary({0, 1, 1, 0, 0, 1, 0})
@@ -65,9 +65,9 @@ TEST_CASE("DancingList", "[DancingList]") {
 
     }
     SECTION("FindMinimumOnesColumn1") {
-        using SudokuZoo::ExactCoverProblem::Details::DancingList;
+        using SudokuZoo::ExactCoverProblem::Details::DancingLinks;
 
-        DancingList problem(7);
+        DancingLinks problem(7);
         problem.add_row_by_binary({0, 0, 1, 0, 1, 1, 0})
                .add_row_by_binary({1, 0, 0, 1, 0, 0, 1})
                .add_row_by_binary({0, 1, 1, 0, 0, 1, 0})
@@ -78,9 +78,9 @@ TEST_CASE("DancingList", "[DancingList]") {
 
     }
     SECTION("FindMinimumOnesColumn2") {
-        using SudokuZoo::ExactCoverProblem::Details::DancingList;
+        using SudokuZoo::ExactCoverProblem::Details::DancingLinks;
 
-        DancingList problem(7);
+        DancingLinks problem(7);
         problem.add_row_by_binary({0, 0, 1, 0, 1, 1, 0})
                .add_row_by_binary({1, 0, 0, 1, 0, 0, 1})
                .add_row_by_binary({0, 1, 1, 0, 0, 1, 0})
@@ -90,9 +90,9 @@ TEST_CASE("DancingList", "[DancingList]") {
         REQUIRE(problem.find_min_ones_col() == 5);
     }
     SECTION("Search") {
-        using SudokuZoo::ExactCoverProblem::Details::DancingList;
+        using SudokuZoo::ExactCoverProblem::Details::DancingLinks;
 
-        DancingList problem(7);
+        DancingLinks problem(7);
         problem.add_row_by_binary({0, 0, 1, 0, 1, 1, 0})
                .add_row_by_binary({1, 0, 0, 1, 0, 0, 1})
                .add_row_by_binary({0, 1, 1, 0, 0, 1, 0})
@@ -102,9 +102,9 @@ TEST_CASE("DancingList", "[DancingList]") {
         problem.solve();
     }
     SECTION("MultiSolution Search") {
-        using SudokuZoo::ExactCoverProblem::Details::DancingList;
+        using SudokuZoo::ExactCoverProblem::Details::DancingLinks;
 
-        DancingList problem(3);
+        DancingLinks problem(3);
         problem.add_row_by_binary({1, 0, 1}, "101")   // row 1
                .add_row_by_binary({1, 1, 0}, "110")   // row 2
                .add_row_by_binary({0, 1, 0}, "010")   // row 3
@@ -113,9 +113,9 @@ TEST_CASE("DancingList", "[DancingList]") {
         problem.print_row_solution();
     }
     SECTION("InitCondSearch") {
-        using SudokuZoo::ExactCoverProblem::Details::DancingList;
+        using SudokuZoo::ExactCoverProblem::Details::DancingLinks;
 
-        DancingList problem(3);
+        DancingLinks problem(3);
         problem.add_row_by_binary({1, 0, 1}, "101")   // row 1
                .add_row_by_binary({1, 1, 0}, "110")   // row 2
                .add_row_by_binary({0, 1, 0}, "010")   // row 3
