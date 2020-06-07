@@ -97,7 +97,7 @@ TEST_CASE("SudokuZooTest", "[SudokuZoo]") {
         sudoku.generate(difficulty);
         REQUIRE(sudoku.is_valid() == true);
     }
-    SECTION("Solver-DancingList") {
+    SECTION("Solver-DancingLinks") {
         using SudokuZoo::Sudoku;
 
         Sudoku sudoku{
@@ -117,7 +117,7 @@ TEST_CASE("SudokuZooTest", "[SudokuZoo]") {
         sudoku.solve();
         REQUIRE(sudoku.is_solved() == true);
     }
-    SECTION("Solver-DancingList multisolution") {
+    SECTION("Solver-DancingLinks multisolution") {
         using SudokuZoo::Sudoku;
 
         Sudoku sudoku{
